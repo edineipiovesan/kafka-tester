@@ -1,0 +1,44 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+### DS_STORE ###
+**DS_STORE**
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### Allow jar builed to deploy versioned and tested on the session manager ###
+!build/
+build/*
+!build/libs/
+!build/libs/*
+!*.jar
+
+### VS Code ###
+.vscode/
+
+### Gradle ###
+.gradle
+

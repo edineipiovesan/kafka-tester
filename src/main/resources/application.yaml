@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: kafka-tester
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    parser:
+      allow-comments: true
+
+  kafka:
+    listener:
+      ack-mode: MANUAL_IMMEDIATE
+      concurrency: 1
+
+###
+# Kafka Common Configuration
+###
+kafka-common:
+  consumer:
+    value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
+    auto.register.schemas: false
+    security.protocol: PLAINTEXT
+
+  producer:
+    client-id: ${spring.application.name}-producer
+    key.serializer: org.apache.kafka.common.serialization.StringSerializer
+    value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    linger.ms: 50
+    batch.size: 5536
+    value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
+    key.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
+    auto.register.schemas: false
+
+###
+# KCert library requires metrics exposure /prometheus endpoint
+###
+management.endpoints.web.exposure.include: "*"
+
+###
+# Server Properties
+###
+server:
+  port: ${SERVER_PORT:9091}
+
+###
+# Log Settings
+###
+logging:
+  level:
+    org.apache.kafka: INFO
+    root: INFO
+
+environments:
+  local:
+    kafka:
+      bootstraps:
+        local: localhost:9092
+      properties:
+        auto.register.schemas: true
+        schema.registry.url: http://localhost:8081
+        value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+        security.protocol: PLAINTEXT
+        ssl.protocol: PLAINTEXT
+  shard:
+    kafka:
+      bootstraps:
+        shard: localhost:9092
+      properties:
+        auto.register.schemas: false
+        value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+        schema.registry.url: http://localhost:8081
+        security.protocol: SASL_SSL
+        ssl.protocol: SASL_SSL
+        sasl:
+          jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
+          mechanism: AWS_MSK_IAM
+          client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
