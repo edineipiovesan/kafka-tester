@@ -2,27 +2,29 @@ import org.apache.avro.Schema.Parser
 import org.apache.avro.compiler.specific.SpecificCompiler
 import org.apache.avro.compiler.specific.SpecificCompiler.FieldVisibility
 import org.apache.avro.generic.GenericData.StringType.CharSequence
-import org.gradle.api.JavaVersion.VERSION_11
+import org.gradle.api.JavaVersion.VERSION_17
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlinVersion = "1.7.10"
+    val kotlinVersion = "1.7.20"
 
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
-    kotlin("plugin.jpa") version kotlinVersion
 
-    id("org.springframework.boot") version "2.6.2"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.springframework.boot") version "3.0.0-SNAPSHOT"
+    id("io.spring.dependency-management") version "1.0.13.RELEASE"
 }
 
 group = "com.github.edineipiovesan"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = VERSION_11
+java.sourceCompatibility = VERSION_17
 
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
+    maven { url = uri("https://repo.spring.io/snapshot") }
+    maven { url = uri("https://packages.confluent.io/maven") }
 }
 
 dependencies {
@@ -35,11 +37,11 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.kafka:spring-kafka:2.8.2")
+    implementation("org.springframework.kafka:spring-kafka:2.9.0")
 
     implementation("tech.allegro.schema.json2avro:converter:0.2.15")
-    implementation("org.apache.avro:avro:1.8.2")
-    implementation("io.confluent:kafka-avro-serializer:5.3.1")
+    implementation("org.apache.avro:avro:1.11.0")
+    implementation("io.confluent:kafka-avro-serializer:7.2.1")
 
     implementation("software.amazon.msk:aws-msk-iam-auth:1.1.4")
 
@@ -51,6 +53,10 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
 }
 
 /**
@@ -100,6 +106,6 @@ tasks.withType<KotlinCompile> {
     dependsOn(avroGen)
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }

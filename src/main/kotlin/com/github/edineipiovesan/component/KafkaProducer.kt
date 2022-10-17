@@ -1,19 +1,19 @@
 package com.github.edineipiovesan.component
 
 import com.github.edineipiovesan.common.Timezone.OFFSET_ZONE
+import jakarta.annotation.PostConstruct
+import jakarta.annotation.PreDestroy
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.header.Headers
 import org.slf4j.LoggerFactory
-import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.core.KafkaOperations
 import org.springframework.scheduling.annotation.Scheduled
 import java.time.LocalDateTime
 import java.time.ZoneId.of
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
 
 class KafkaProducer {
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -21,7 +21,7 @@ class KafkaProducer {
 
     lateinit var eventGenerator: () -> Pair<String?, GenericRecord>
     lateinit var headerGenerator: (record: GenericRecord) -> Headers
-    lateinit var kafkaTemplate: KafkaTemplate<String?, GenericRecord>
+    lateinit var kafkaTemplate: KafkaOperations<String?, GenericRecord>
     lateinit var topicName: String
 
     @PostConstruct
@@ -50,14 +50,17 @@ class KafkaProducer {
 
         headerGenerator(record).forEach { producerRecord.headers().add(it) }
 
-        kafkaTemplate.send(producerRecord).addCallback(
-            {
-                val now = now()
-                var counter = productionRate[now] ?: 0
-                productionRate[now] = ++counter
-            },
-            { logger.error("An error occurred while producing message; key=$key; record$record", it) }
-        )
+        kafkaTemplate.usingCompletableFuture()
+            .send(producerRecord)
+            .whenComplete { _, error ->
+                if (error == null) {
+                    val now = now()
+                    var counter = productionRate[now] ?: 0
+                    productionRate[now] = ++counter
+                } else {
+                    logger.error("Error", error)
+                }
+            }
     }
 
     /**

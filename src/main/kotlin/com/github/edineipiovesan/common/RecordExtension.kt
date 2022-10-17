@@ -13,12 +13,7 @@ import tech.allegro.schema.json2avro.converter.JsonAvroConverter
 import java.lang.Class.forName
 
 fun generateRecord(request: Request): GenericRecord {
-    return if (request.schemaFullName != null) {
-        stringToSpecificRecord(request.avro.toString(), request.schemaFullName)
-    } else {
-
-        generateRecordBySchema(request.avro.toString(), request.schema)
-    }
+    return generateRecordBySchema(request.avro.toString(), request.schema.toString())
 }
 
 fun generateRecordBySchema(record: String, schema: String): GenericRecord {

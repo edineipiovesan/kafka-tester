@@ -31,9 +31,6 @@ kafka-common:
     key.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
     auto.register.schemas: false
 
-###
-# KCert library requires metrics exposure /prometheus endpoint
-###
 management.endpoints.web.exposure.include: "*"
 
 ###

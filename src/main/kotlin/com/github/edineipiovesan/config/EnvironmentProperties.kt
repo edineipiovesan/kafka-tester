@@ -5,9 +5,9 @@ import com.github.edineipiovesan.config.EnvironmentProperties.Companion.PREFIX_P
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
-@ConstructorBinding
+
 @ConfigurationProperties(prefix = PREFIX_PROPERTIES)
-data class EnvironmentProperties(
+data class EnvironmentProperties @ConstructorBinding constructor(
     val local: Environment,
     val shard: Environment,
 ) {

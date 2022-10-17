@@ -8,8 +8,7 @@ data class Request(
     val headers: Map<String, String>,
     val key: String? = null,
     val avro: JsonNode,
-    val schemaFullName: String? = null,
-    val schema: String = "",
+    val schema: JsonNode,
     val kafkaCluster: KafkaCluster = KafkaCluster.LOCAL,
     val kafkaEnvironment: KafkaEnvironment = DEV,
     val producerProperties: Map<String, String> = mapOf()
@@ -20,5 +19,5 @@ enum class KafkaCluster {
 }
 
 enum class KafkaEnvironment {
-    DEV, HOM
+    DEV, HOM, PROD
 }

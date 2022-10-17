@@ -4,9 +4,9 @@ import com.github.edineipiovesan.config.KafkaProperties.Companion.PREFIX_PROPERT
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
-@ConstructorBinding
+
 @ConfigurationProperties(prefix = PREFIX_PROPERTIES)
-data class KafkaProperties(
+data class KafkaProperties @ConstructorBinding constructor(
     val consumer: Map<String, String>,
     val producer: Map<String, String>
 ) {
